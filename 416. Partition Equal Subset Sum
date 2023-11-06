@@ -1,0 +1,64 @@
+Given an integer array nums, return true if you can partition the array into two subsets such that 
+the sum of the elements in both subsets is equal or false otherwise.
+Memoization code:
+class Solution {
+public:
+
+bool div(int ind,int target, vector<int> &arr, vector<vector<int>> &dp ){
+
+    if(target==0)return true;
+    if(ind==0) return(arr[0]==target);
+    if(dp[ind][target]!=-1) return dp[ind][target];
+    bool nottake= div(ind-1,target,arr, dp);
+    bool take=false;
+    if(arr[ind]<=target) 
+    take= div(ind-1, target-arr[ind], arr,  dp);
+
+     return dp[ind][target]=take|| nottake;
+ }
+
+    bool canPartition(vector<int>& nums) {
+        int sum;
+        int n=nums.size();
+     for(int i=0; i<nums.size();i++){
+         sum+=nums[i];
+        }
+     int target=sum/2;
+      vector<vector<bool>> dp(n,vector<int>(target+1,-1));
+      return div(n-1, target,nums , dp);
+    }
+};
+
+
+tabulation:
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum=0;
+        for(auto i:nums){
+            sum+=i; }
+
+        if(sum%2!=0)return false;
+        int n=nums.size();
+        int m=sum/2;
+        vector<vector<int>> dp(n+1,vector<int>(m+1,0));
+        for(int i=0;i<=n; i++){
+            for(int j=0;j<=m;j++){
+              // No of elements & target both are zero
+                if(i==0 && j==0){dp[i][j]=true;
+                }
+                else if(i==0){ dp[i][j]=false;
+                }
+                // elelment at that index is less than the target
+                else if(nums[i-1]<=j){
+                    dp[i][j]=(dp[i-1][j-nums[i-1]] || dp[i-1][j]);
+                }
+                    else{
+                        dp[i][j]=dp[i-1][j];
+                    }
+             }
+        }
+       return dp[n][m]; 
+        
+    }
+};
